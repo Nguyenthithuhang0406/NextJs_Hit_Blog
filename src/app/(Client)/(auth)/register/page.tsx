@@ -4,19 +4,41 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import React from 'react'
 
+import { IUser } from '@/app/(Client)/types/user';
+import { registerValidation } from '@/app/(Client)/utils/validation/authValidation';
+import { register } from '@/app/(Client)/API/auth';
+
 import './register.scss';
+
 const Register = () => {
   const router = useRouter();
   const handleClickNavigationLogin = () => {
     router.push('/login');
+  }
+  const initialValues: IUser = {
+    email: '',
+    password: '',
+    name: '',
+  }
+
+  const handleRegister = async (values: IUser) => {
+    try {
+      const res = await register(values);
+      router.push('/login');
+      console.log('registerData', res);
+    } catch (error) {
+      console.log('error', error);
+    }
+    
   }
   return (
     <>
       <div className='register-container'>
         <div className='register-body'>
         <Formik
-          initialValues={ {}}
-          onSubmit={() => {}}
+            initialValues={initialValues}
+            validationSchema={registerValidation}
+          onSubmit={handleRegister}
         >
           <Form>
             <p className='register-title'>Sign Up</p>
@@ -35,7 +57,7 @@ const Register = () => {
 
             <div className='register-group-field'>
               <label htmlFor='password' className='register-label'>Password</label>
-              <Field name='password' type='text' className='register-field' placeholder="Enter password"/>
+              <Field name='password' type='password' className='register-field' placeholder="Enter password"/>
               <ErrorMessage name='password' component='div' className='register-error' />
             </div>
 
